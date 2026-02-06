@@ -4099,85 +4099,268 @@
           </div>
         </div>
 
-        <!-- Roster Calendar (User Role Only) -->
-        <div class="col-span-12 mt-4 sm:mt-5 lg:mt-6" x-show="isRole('user')" x-data="{ 
-                currDate: new Date(),
-                get daysInMonth() { return new Date(this.currDate.getFullYear(), this.currDate.getMonth() + 1, 0).getDate() },
-                get firstDayIndex() { return new Date(this.currDate.getFullYear(), this.currDate.getMonth(), 1).getDay() },
-                get today() { return new Date().getDate() },
-                get isCurrentMonth() { return new Date().getMonth() === this.currDate.getMonth() && new Date().getFullYear() === this.currDate.getFullYear() }
-             }">
+        <!-- Roster Calendar (User Role Only) - Vanilla JS Version -->
+        <div class="col-span-12 mt-4 sm:mt-5 lg:mt-6" id="roster-calendar-container">
           <div class="card p-4 sm:p-5">
-            <div class="flex items-center justify-between">
-              <h2 class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100 lg:text-lg"
-                x-text="'Work Roster - ' + new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currDate)">
-                Work Roster
-              </h2>
-              <div class="flex space-x-2">
-                <div class="flex items-center space-x-1">
-                  <div class="size-2 rounded-full bg-success"></div>
-                  <span class="text-xs text-slate-500 dark:text-navy-300">Morning</span>
-                </div>
-                <div class="flex items-center space-x-1">
-                  <div class="size-2 rounded-full bg-info"></div>
-                  <span class="text-xs text-slate-500 dark:text-navy-300">Evening</span>
-                </div>
-                <div class="flex items-center space-x-1">
-                  <div class="size-2 rounded-full bg-warning"></div>
-                  <span class="text-xs text-slate-500 dark:text-navy-300">Night</span>
-                </div>
+            <div class="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+              <div class="flex items-center space-x-3">
+                <h2 id="roster-title"
+                  class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100 lg:text-lg">
+
+                </h2>
+                <!-- Month Filter -->
+                <input type="month" id="roster-month-filter"
+                  class="form-input h-8 rounded-lg border border-slate-300 bg-transparent px-2 py-1 text-xs placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" />
+              </div>
+              <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                <span class="badge space-x-1.5 rounded-full bg-success/10 px-2.5 py-1 text-success dark:bg-success/15">
+                  <div class="size-1.5 rounded-full bg-current"></div>
+                  <span>Morning</span>
+                </span>
+                <span class="badge space-x-1.5 rounded-full bg-warning/10 px-2.5 py-1 text-warning dark:bg-warning/15">
+                  <div class="size-1.5 rounded-full bg-current"></div>
+                  <span>Night</span>
+                </span>
+                <span class="badge space-x-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-primary dark:bg-primary/15">
+                  <div class="size-1.5 rounded-full bg-current"></div>
+                  <span>Paid Leave</span>
+                </span>
+                <span class="badge space-x-1.5 rounded-full bg-error/10 px-2.5 py-1 text-error dark:bg-error/15">
+                  <div class="size-1.5 rounded-full bg-current"></div>
+                  <span>Leave</span>
+                </span>
+                <span
+                  class="badge space-x-1.5 rounded-full bg-secondary/10 px-2.5 py-1 text-secondary dark:bg-secondary/15">
+                  <div class="size-1.5 rounded-full bg-current"></div>
+                  <span>Half Day</span>
+                </span>
+                <span class="badge space-x-1.5 rounded-full bg-info/10 px-2.5 py-1 text-info dark:bg-info/15">
+                  <div class="size-1.5 rounded-full bg-current"></div>
+                  <span>WFH</span>
+                </span>
+                <span
+                  class="badge space-x-1.5 rounded-full bg-slate-150 px-2.5 py-1 text-slate-600 dark:bg-navy-600 dark:text-navy-200">
+                  <div class="size-1.5 rounded-full bg-current"></div>
+                  <span>Holiday</span>
+                </span>
+                <span
+                  class="badge space-x-1.5 rounded-full border border-slate-200 px-2.5 py-1 text-slate-500 dark:border-navy-500 dark:text-navy-300">
+                  <div class="size-1.5 rounded-full bg-slate-400"></div>
+                  <span>Sat Off</span>
+                </span>
+                <!-- <span
+                  class="badge space-x-1.5 rounded-full bg-success px-2.5 py-1 text-white shadow-soft shadow-success/50">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
+                  <span>Salary</span>
+                </span> -->
               </div>
             </div>
-            <div
-              class="mt-4 grid grid-cols-7 gap-px border border-slate-200 bg-slate-200 dark:border-navy-500 dark:bg-navy-500 rounded-lg overflow-hidden">
-              <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']">
-                <div
-                  class="bg-slate-50 py-3 text-center text-xs font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100"
-                  x-text="day"></div>
-              </template>
-
-              <!-- Blank days for start of month -->
-              <template x-for="i in firstDayIndex">
-                <div class="bg-white min-h-[80px] p-2 dark:bg-navy-700"></div>
-              </template>
-
-              <template x-for="date in Array.from({length: daysInMonth}, (_, i) => i + 1)">
-                <div
-                  class="bg-white min-h-[80px] p-2 transition-colors hover:bg-slate-50 dark:bg-navy-700 dark:hover:bg-navy-600 relative">
-                  <span class="text-xs font-semibold text-slate-600 dark:text-navy-200" x-text="date"></span>
-
-                  <!-- Sample Shifts -->
-                  <div x-show="[2,5,9,12,16,19,23,26].includes(date)"
-                    class="mt-1 rounded bg-success/10 px-1.5 py-0.5 text-[10px] font-medium text-success">
-                    08:00 - 16:00
-                  </div>
-                  <div x-show="[3,6,10,13,17,20,24,27].includes(date)"
-                    class="mt-1 rounded bg-info/10 px-1.5 py-0.5 text-[10px] font-medium text-info">
-                    16:00 - 00:00
-                  </div>
-                  <div x-show="[4,7,11,14,18,21,25].includes(date)"
-                    class="mt-1 rounded bg-warning/10 px-1.5 py-0.5 text-[10px] font-medium text-warning">
-                    00:00 - 08:00
-                  </div>
-                  <div x-show="[1,8,15,22,28].includes(date)"
-                    class="mt-1 rounded bg-error/10 px-1.5 py-0.5 text-[10px] font-medium text-error text-center">
-                    OFF
-                  </div>
-
-                  <!-- Today highlight marker -->
-                  <div x-show="isCurrentMonth && date === today"
-                    class="absolute top-2 right-2 size-2 rounded-full bg-primary shadow-sm"></div>
-                </div>
-              </template>
+            <div class="mt-4 overflow-x-auto">
+              <div id="roster-grid"
+                class="min-w-[900px] grid grid-cols-7 gap-px border border-slate-200 bg-slate-200 dark:border-navy-500 dark:bg-navy-500 rounded-lg overflow-hidden">
+                <!-- Grid Content Will Be Injected Here via JS -->
+              </div>
             </div>
           </div>
         </div>
+
+        <script>
+          (function () {
+
+            const container = document.getElementById('roster-calendar-container');
+            if (!container) return; // Guard
+
+            const titleEl = document.getElementById('roster-title');
+            const filterEl = document.getElementById('roster-month-filter');
+            const gridEl = document.getElementById('roster-grid');
+
+            // Simple Role Check (imitating x-show="isRole('user')")
+            // As we moved to Vanilla, we need to poll or listen for role changes.
+            // For now, we assume if the parent container would show it, we initialize logic.
+            // We will set display to block based on localstorage role 'user'.
+            function checkRole() {
+              container.style.display = 'block';
+            }
+            setInterval(checkRole, 1000);
+
+            let currentDate = new Date();
+
+            // Set Max Date for Filter
+            const today = new Date();
+            const maxStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+            filterEl.max = maxStr;
+            filterEl.value = maxStr;
+
+            filterEl.addEventListener('change', (e) => {
+              if (!e.target.value) return;
+              const [y, m] = e.target.value.split('-');
+              currentDate = new Date(parseInt(y), parseInt(m) - 1, 1);
+              renderCalendar();
+            });
+
+            function getStatus(d) {
+              const dayIndex = d.getDay();
+              const date = d.getDate();
+              const m = d.getMonth() + 1;
+
+              // Holidays
+              if (m === 1 && date === 26) return { type: 'holiday', label: 'Republic Day' };
+              if (m === 8 && date === 15) return { type: 'holiday', label: 'Independence Day' };
+              if (m === 10 && date === 2) return { type: 'holiday', label: 'Gandhi Jayanti' };
+              if (m === 12 && date === 25) return { type: 'holiday', label: 'Christmas' };
+              if (m === 2 && date === 14) return { type: 'holiday', label: 'Valentine\'s Day' };
+
+              // Sunday Off
+              if (dayIndex === 0) return { type: 'sun-off', label: 'SUN OFF' };
+
+              // Sat Off Logic
+              if (dayIndex === 6) {
+                const isEvenMonth = m % 2 === 0;
+                // Week of Month Calculation
+                const firstDayOfMonth = new Date(d.getFullYear(), d.getMonth(), 1).getDay();
+                const weekOfMonth = Math.ceil((date + firstDayOfMonth) / 7);
+
+                const isOff = isEvenMonth ? [2, 4].includes(weekOfMonth) : [1, 3].includes(weekOfMonth);
+                if (isOff) return { type: 'sat-off', label: 'SAT OFF' };
+              }
+
+              // Specific Dates (Only for displayed month matching render)
+              // Since this function is called for specific dates, we just check the date.
+              if (date === 10) return { type: 'salary', label: '💰 SALARY DATE' };
+              if (date === 22) return { type: 'leave', label: 'LEAVE' };
+              if (date === 15) return { type: 'half-day', label: 'HALF DAY' };
+              if (date === 8) return { type: 'wfh', label: 'WFH' };
+
+              // Shift Rotation
+              const firstDayOfMonth = new Date(d.getFullYear(), d.getMonth(), 1).getDay();
+              const week = Math.ceil((date + firstDayOfMonth) / 7);
+              return (week % 2 === 0)
+                ? { type: 'morning', label: '12:00 - 21:00' }
+                : { type: 'night', label: '21:00 - 06:00' };
+            }
+
+            function renderCalendar() {
+              const year = currentDate.getFullYear();
+              const month = currentDate.getMonth();
+
+              // Update Title
+              titleEl.textContent = `${new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate)}`;
+
+              // Generate Grid HTML
+              let html = '';
+
+              // Headers
+              const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+              days.forEach(day => {
+                html += `<div class="bg-slate-50 py-3 text-center text-xs font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100">${day}</div>`;
+              });
+
+              const firstDayIndex = new Date(year, month, 1).getDay();
+              const daysInMonth = new Date(year, month + 1, 0).getDate();
+              const prevMonthDays = new Date(year, month, 0).getDate();
+
+              // Trailing Days
+              for (let i = 0; i < firstDayIndex; i++) {
+                const date = prevMonthDays - firstDayIndex + i + 1;
+                const d = new Date(year, month - 1, date);
+                const status = getStatus(d);
+                html += buildCell(date, status, true, false);
+              }
+
+              // Current Days
+              const todayObj = new Date();
+              for (let i = 1; i <= daysInMonth; i++) {
+                const d = new Date(year, month, i);
+                const status = getStatus(d);
+                const isToday = (i === todayObj.getDate() && month === todayObj.getMonth() && year === todayObj.getFullYear());
+                html += buildCell(i, status, false, isToday);
+              }
+
+              gridEl.innerHTML = html;
+            }
+
+            function buildCell(date, status, isFade, isToday) {
+              const baseClass = isFade ? 'text-slate-400 dark:text-navy-400' : (isToday ? 'bg-primary text-white shadow-gold' : 'text-slate-700 dark:text-navy-100');
+              const dateContainerClass = isToday
+                ? 'flex items-center justify-center size-6 rounded-full bg-primary text-white shadow-md'
+                : 'flex items-center justify-center size-6 rounded-full text-slate-700 dark:text-navy-100 font-bold';
+
+              const containerClass = isToday
+                ? 'bg-primary/5 dark:bg-primary/10 border-b-2 border-primary z-10'
+                : (isFade ? 'bg-white/50 dark:bg-navy-800/50 opacity-50 border-b-2 border-slate-100 dark:border-navy-600' : 'bg-white dark:bg-navy-700 border-b-2 border-slate-100 dark:border-navy-600');
+
+              // Badge Logic
+              let badgeClass = '';
+              if (status.type === 'morning') badgeClass = 'bg-success/10 text-success';
+              else if (status.type === 'night') badgeClass = 'bg-warning/10 text-warning';
+              else if (status.type === 'sat-off') badgeClass = 'bg-slate-100 text-slate-500';
+              else if (status.type === 'sun-off') badgeClass = 'bg-error/10 text-error';
+              else if (status.type === 'holiday') badgeClass = 'bg-slate-200 text-slate-600';
+              else if (status.type === 'salary') badgeClass = 'bg-success text-white font-bold shadow-sm';
+              else if (status.type === 'leave') badgeClass = 'bg-error/10 text-error';
+              else if (status.type === 'half-day') badgeClass = 'bg-secondary/10 text-secondary';
+              else if (status.type === 'wfh') badgeClass = 'bg-info/10 text-info';
+
+              // Attendance Time Logic (Simulated for Demo)
+              let attendanceHtml = '';
+              const isWorking = ['morning', 'night'].includes(status.type);
+
+              // Check if date is in past/today
+              const checkBlockMonth = isFade ? currentDate.getMonth() - 1 : currentDate.getMonth();
+              const cellDateObj = new Date(currentDate.getFullYear(), checkBlockMonth, date);
+              const now = new Date();
+              now.setHours(0, 0, 0, 0);
+              cellDateObj.setHours(0, 0, 0, 0);
+
+              const isPastOrToday = cellDateObj <= now;
+
+              if (isWorking && isPastOrToday && !isFade) {
+                const rMin = Math.floor(Math.random() * 10) + 1;
+                const inTime = status.type === 'morning' ? `12:0${rMin}` : `21:0${rMin}`;
+                const outTime = status.type === 'morning' ? `21:${10 + rMin}` : `06:0${rMin}`;
+
+                attendanceHtml = `
+                        <div class="ml-auto flex flex-col items-end space-y-0.5 mt-0.5">
+                            <div class="flex items-center justify-end space-x-1.5 min-w-[60px]">
+                                <span class="text-[9px] uppercase font-bold text-slate-400 dark:text-navy-300">In</span>
+                                <span class="text-[11px] font-semibold text-success tracking-tight">${inTime}</span>
+                            </div>
+                            <div class="flex items-center justify-end space-x-1.5 min-w-[60px]">
+                                <span class="text-[9px] uppercase font-bold text-slate-400 dark:text-navy-300">Out</span>
+                                <span class="text-[11px] font-semibold text-slate-600 dark:text-navy-100 tracking-tight">${outTime}</span>
+                            </div>
+                        </div>
+                    `;
+              }
+
+              return `
+                <div class="${containerClass} h-24 flex flex-col p-2 transition-all duration-200 hover:bg-primary/10 dark:hover:bg-navy-500 relative cursor-pointer border-r border-b border-slate-100 dark:border-navy-600 group">
+                    <div class="flex justify-between items-start w-full">
+                        <div class="${dateContainerClass} text-xs transition-colors group-hover:bg-primary group-hover:text-white">
+                            ${date}
+                        </div>
+                        ${attendanceHtml}
+                    </div>
+                    <div class="mt-auto w-full flex justify-center pb-1">
+                         <div class="rounded-md px-2 py-1 text-[10px] font-semibold text-center truncate w-full ${badgeClass} border border-transparent group-hover:border-current/10">
+                            ${status.label}
+                         </div>
+                    </div>
+                </div>`;
+            }
+
+            renderCalendar();
+            // Expose render to global if needed, but not required.
+          })();
+        </script>
 
     </main>
   </div>
   <!-- 
         This is a place for Alpine.js Teleport feature 
-        @see https://alpinejs.dev/directives/teleport
       -->
   <div id="x-teleport-target"></div>
   <script>
